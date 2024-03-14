@@ -64,7 +64,7 @@ const ShareFiles: React.FC<{ projectId?: number }> = ({ projectId }) => {
       >
         <ProForm
           formRef={formRef}
-          title="新建环境"
+          title="共享目录"
           loading={loading}
           onFinish={async (values: Record<string, any>) => {
             setLoading(true);

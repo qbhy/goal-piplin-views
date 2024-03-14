@@ -77,7 +77,7 @@ const ConfigFiles: React.FC<{ projectId?: number }> = ({ projectId }) => {
       >
         <ProForm
           formRef={formRef}
-          title="新建环境"
+          title="新建配置文件"
           loading={loading}
           onFinish={async (values: Record<string, any>) => {
             setLoading(true);
@@ -95,7 +95,7 @@ const ConfigFiles: React.FC<{ projectId?: number }> = ({ projectId }) => {
           <ProFormText
             required
             name="name"
-            label="环境名称"
+            label="配置名称"
             tooltip="最长为 24 位"
             placeholder="请输入名称"
           />
