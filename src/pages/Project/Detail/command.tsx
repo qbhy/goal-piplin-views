@@ -40,7 +40,7 @@ const Commands: React.FC<{ projectId?: number }> = ({ projectId }) => {
     };
     const columns = [
         { dataIndex: 'id', title: 'ID' },
-        { dataIndex: 'name', title: '部署名称' },
+        { dataIndex: 'name', title: '步骤名称' },
         { dataIndex: 'step', title: '步骤' },
         { dataIndex: 'user', title: '用户' },
         {
@@ -68,7 +68,7 @@ const Commands: React.FC<{ projectId?: number }> = ({ projectId }) => {
                                             refreshEnv();
                                         });
                                     },
-                                    title: `确定删除环境 "${data.name}" 吗？`,
+                                    title: `确定删除命令 "${data.name}" 吗？`,
                                 })
                             }
                         >

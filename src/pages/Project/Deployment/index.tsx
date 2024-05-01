@@ -96,6 +96,9 @@ export default function () {
                     <div>{deployment?.comment || '无评论'}</div>
                 </div>
                 <div>
+                    <div>版本：</div>
+                    <div className="mb-3">{deployment?.version}</div>
+
                     <div>状态</div>
                     <div
                         className={classNames({

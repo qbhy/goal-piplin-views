@@ -5,13 +5,15 @@ import { ProjectDetail } from '@/services/ant-design-pro/project';
 import { useRequest } from '@@/plugin-request';
 import {
     ActionType,
+    ProColumns,
     ProForm,
+    ProFormInstance,
     ProFormSelect,
     ProFormSwitch,
     ProFormText,
 } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-table';
-import { Button, Modal } from 'antd';
+import { AutoComplete, Button, Modal } from 'antd';
 import classNames from 'classnames';
 import React, { useRef, useState } from 'react';
 import { Link, useNavigate } from 'umi';
@@ -24,14 +26,14 @@ const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
     const { data: commands } = useRequest(() => getCommands({ project_id: project?.id }));
     const navigate = useNavigate();
 
-    const columns = [
-        { dataIndex: 'id', title: 'ID' },
-        { dataIndex: 'version', title: '版本' },
+    const columns: ProColumns<Deployment>[] = [
+        { dataIndex: 'id', title: 'ID', search: false },
         { dataIndex: 'comment', title: '备注' },
+        { dataIndex: 'version', title: '版本' },
         {
             dataIndex: 'status',
             title: '状态',
-            render: (status: any | string, data: any | Deployment) => {
+            render: (status: any, data: Deployment) => {
                 return (
                     <div
                         key={data.id}
@@ -45,16 +47,40 @@ const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
                     </div>
                 );
             },
+            valueEnum: {
+                waiting: '等待',
+                running: '运行中',
+                failed: '失败',
+                finished: '成功',
+            },
         },
-        { dataIndex: 'created_at', title: '创建时间' },
-        { dataIndex: 'updated_at', title: '更新时间' },
+        { dataIndex: 'created_at', title: '创建时间', search: false },
+        { dataIndex: 'updated_at', title: '更新时间', search: false },
         {
             title: '操作',
+            search: false,
             render: (data: any) => {
                 return <Link to={`/project/deployment?id=${data.id}`}>详情</Link>;
             },
         },
     ];
+    const branches: { value: string; label: string }[] = [];
+    for (const branch of project?.settings.branches || []) {
+        branches.push({
+            value: branch,
+            label: `分支: ${branch}`,
+        });
+    }
+
+    for (const branch of project?.settings.tags || []) {
+        branches.push({
+            value: branch,
+            label: `标签: ${branch}`,
+        });
+    }
+
+    const formRef = useRef<ProFormInstance>();
+
     return (
         <div className="">
             <Modal
@@ -63,7 +89,8 @@ const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
                 okButtonProps={{ hidden: true }}
             >
                 <ProForm
-                    title="新建环境"
+                    formRef={formRef}
+                    title="开始部署"
                     loading={loading}
                     onFinish={async (values: Record<string, any>) => {
                         setLoading(true);
@@ -84,13 +111,21 @@ const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
                         tooltip="最长为 24 位"
                         placeholder="如：修复 xxx bug"
                     />
-                    <ProFormText
-                        required
-                        name="version"
-                        label="部署版本"
-                        tooltip="分支名或者版本号"
+
+                    <ProFormText name="version" hidden initialValue={project.default_branch} />
+
+                    <div className="mb-1">分支</div>
+                    <AutoComplete
+                        className="w-full mb-5"
+                        defaultValue={project.default_branch}
                         placeholder="如：master"
-                        initialValue={project?.default_branch}
+                        options={branches}
+                        onChange={(version) => {
+                            formRef.current?.setFieldValue('version', version);
+                        }}
+                        onSelect={(version) => {
+                            formRef.current?.setFieldValue('version', version);
+                        }}
                     />
                     <ProFormSelect
                         required
