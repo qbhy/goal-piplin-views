@@ -1,5 +1,5 @@
 import { getCommands } from '@/services/ant-design-pro/commands';
-import { createDeployment, getDeployments } from '@/services/ant-design-pro/deployment';
+import { createDeployment, Deployment, getDeployments } from '@/services/ant-design-pro/deployment';
 import { getEnvironments } from '@/services/ant-design-pro/environment';
 import { ProjectDetail } from '@/services/ant-design-pro/project';
 import { useRequest } from '@@/plugin-request';
@@ -12,6 +12,7 @@ import {
 } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-table';
 import { Button, Modal } from 'antd';
+import classNames from 'classnames';
 import React, { useRef, useState } from 'react';
 import { Link, useNavigate } from 'umi';
 
@@ -27,7 +28,24 @@ const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
         { dataIndex: 'id', title: 'ID' },
         { dataIndex: 'version', title: '版本' },
         { dataIndex: 'comment', title: '备注' },
-        { dataIndex: 'status', title: '状态' },
+        {
+            dataIndex: 'status',
+            title: '状态',
+            render: (status: any | string, data: any | Deployment) => {
+                return (
+                    <div
+                        key={data.id}
+                        className={classNames({
+                            'text-green-500': status === 'finished',
+                            'text-blue-500': status === 'running',
+                            'text-red-500': status === 'failed',
+                        })}
+                    >
+                        {status}
+                    </div>
+                );
+            },
+        },
         { dataIndex: 'created_at', title: '创建时间' },
         { dataIndex: 'updated_at', title: '更新时间' },
         {

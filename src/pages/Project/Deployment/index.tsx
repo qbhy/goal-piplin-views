@@ -3,6 +3,7 @@ import {
     CommandOutput,
     Deployment,
     getDeploymentDetail,
+    runDeployment,
 } from '@/services/ant-design-pro/deployment';
 import { notify } from '@/services/ant-design-pro/notify';
 import { useRequest } from 'ahooks';
@@ -17,10 +18,18 @@ function renderServers(servers: Record<string, CommandOutput>, onClick: (key: st
     for (let key in servers) {
         items.push(
             <div key={key}>
-                <div className={classNames('flex justify-between p-3 ml-5 border-b')}>
+                <div className={classNames('flex justify-between p-3 ml-5 border-b items-center')}>
                     <div>{servers[key].host}</div>
-                    <div className="flex-1 flex justify-between pl-3">
-                        <div>{servers[key].status}</div>
+                    <div className="flex-1 flex justify-between pl-3 items-center">
+                        <div
+                            className={classNames({
+                                'text-green-500': servers[key].status === 'finished',
+                                'text-blue-500': servers[key].status === 'running',
+                                'text-red-500': servers[key].status === 'failed',
+                            })}
+                        >
+                            {servers[key].status}
+                        </div>
                         <Button onClick={() => onClick(key)}>输出</Button>
                     </div>
                 </div>
@@ -88,11 +97,19 @@ export default function () {
                 </div>
                 <div>
                     <div>状态</div>
-                    <div>{deployment?.status}</div>
+                    <div
+                        className={classNames({
+                            'text-green-500': deployment?.status === 'finished',
+                            'text-blue-500': deployment?.status === 'running',
+                            'text-red-500': deployment?.status === 'failed',
+                        })}
+                    >
+                        {deployment?.status}
+                    </div>
                 </div>
                 <div className="flex justify-end">
                     <div className="p-3">
-                        <Button>重新运行</Button>
+                        <Button onClick={() => runDeployment(deployment?.id)}>重新运行</Button>
                     </div>
                 </div>
             </div>
@@ -115,7 +132,9 @@ export default function () {
                             </div>
                             <div>
                                 耗时：
-                                {result.time_consuming ? result.time_consuming + '秒' : '未完成'}
+                                {result.time_consuming
+                                    ? result.time_consuming / 1000 + '秒'
+                                    : '未完成'}
                             </div>
                         </div>
 

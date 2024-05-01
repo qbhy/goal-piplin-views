@@ -43,6 +43,13 @@ export async function createDeployment(data: Record<any, any>) {
     }).then((res) => res.data);
 }
 
+export async function runDeployment(id: any) {
+    return await request('/api/deployment/run', {
+        data: { id },
+        method: 'POST',
+    });
+}
+
 export async function getDeploymentDetail(id: any) {
     return await request<{
         data: {
