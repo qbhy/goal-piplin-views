@@ -211,13 +211,14 @@ const Commands: React.FC<{ projectId?: number }> = ({ projectId }) => {
                     </Button>,
                 ]}
                 columns={columns}
-                request={async (params) =>
-                    getCommands({
+                request={async (params) => {
+                    return getCommands({
                         project_id: projectId,
                         page: params.current,
                         page_size: params.pageSize,
-                    })
-                }
+                        ...params,
+                    });
+                }}
                 pagination={{ pageSize: 10 }}
             ></ProTable>
         </div>
