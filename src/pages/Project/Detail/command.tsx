@@ -36,7 +36,7 @@ const Commands: React.FC<{ projectId?: number }> = ({ projectId }) => {
     const setForm = (data?: Command) => {
         setConfig(data);
         if (data !== undefined) {
-            formRef.current?.setFieldsValue(data);
+            setTimeout(() => formRef.current?.setFieldsValue(data), 300);
         }
     };
     const columns: ProColumns<Command>[] = [

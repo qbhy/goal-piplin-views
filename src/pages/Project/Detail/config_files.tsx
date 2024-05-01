@@ -9,6 +9,7 @@ import { getEnvironments } from '@/services/ant-design-pro/environment';
 import { useRequest } from '@@/plugin-request';
 import {
     ActionType,
+    ProColumns,
     ProForm,
     ProFormInstance,
     ProFormSelect,
@@ -30,16 +31,18 @@ const ConfigFiles: React.FC<{ projectId?: number }> = ({ projectId }) => {
     const setForm = (data: any) => {
         setConfig(data);
         if (data !== undefined) {
-            formRef.current?.setFieldsValue(data);
+            setTimeout(() => formRef.current?.setFieldsValue(data), 300);
         }
     };
-    const columns = [
-        { dataIndex: 'id', title: 'ID' },
+    const columns: ProColumns<ConfigFile>[] = [
+        { dataIndex: 'id', title: 'ID', search: false },
         { dataIndex: 'name', title: '配置文件名' },
-        { dataIndex: 'created_at', title: '创建时间' },
-        { dataIndex: 'updated_at', title: '更新时间' },
+        { dataIndex: 'content', title: '内容', hidden: true },
+        { dataIndex: 'created_at', title: '创建时间', search: false },
+        { dataIndex: 'updated_at', title: '更新时间', search: false },
         {
             title: '操作',
+            search: false,
             render: (data: any | ConfigFile) => {
                 return (
                     <div className="flex gap-3">
@@ -91,7 +94,14 @@ const ConfigFiles: React.FC<{ projectId?: number }> = ({ projectId }) => {
                         });
                     }}
                 >
-                    <ProFormText initialValue={config?.id} required disabled name="id" label="ID" />
+                    <ProFormText
+                        initialValue={config?.id}
+                        required
+                        disabled
+                        hidden
+                        name="id"
+                        label="ID"
+                    />
                     <ProFormText
                         required
                         name="name"
@@ -153,6 +163,7 @@ const ConfigFiles: React.FC<{ projectId?: number }> = ({ projectId }) => {
                         project_id: projectId,
                         page: params.current,
                         page_size: params.pageSize,
+                        name: params.name,
                     })
                 }
                 pagination={{ pageSize: 10 }}

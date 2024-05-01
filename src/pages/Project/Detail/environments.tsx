@@ -102,7 +102,7 @@ const Environments: React.FC<{ projectId?: number }> = ({ projectId }) => {
                 okButtonProps={{ hidden: true }}
             >
                 <ProForm
-                    title="新建环境"
+                    title="编辑环境"
                     loading={loading}
                     onFinish={async (values: Record<string, any>) => {
                         setLoading(true);

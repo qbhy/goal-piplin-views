@@ -47,11 +47,11 @@ export default () => {
                         label: '共享目录',
                         children: <ShareFiles projectId={project?.id} />,
                     },
-                    {
-                        key: 'callback',
-                        label: '部署回调',
-                        children: <div>部署回调</div>,
-                    },
+                    // {
+                    //     key: 'callback',
+                    //     label: '部署回调',
+                    //     children: <div>部署回调</div>,
+                    // },
                     {
                         key: 'editor',
                         label: '更新项目',

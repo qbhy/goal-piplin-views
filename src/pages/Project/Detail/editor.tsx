@@ -36,7 +36,7 @@ const Editor: React.FC<{ project?: ProjectDetail; onUpdated: () => void }> = ({
 
     return (
         <ProForm formRef={formRef} onFinish={update} initialValues={project}>
-            <ProFormText name="id" label="ID" disabled />
+            <ProFormText name="id" label="ID" disabled hidden />
             <ProFormText name="name" label="名称" />
             <ProFormSelect name="default_branch" label="默认分支" options={branches} />
             <ProFormText name="project_path" label="项目路径" />
