@@ -109,7 +109,16 @@ export default function () {
                 </div>
                 <div className="flex justify-end">
                     <div className="p-3">
-                        <Button onClick={() => runDeployment(deployment?.id)}>重新运行</Button>
+                        <Button
+                            onClick={() => {
+                                if (deployment?.status !== 'failed') {
+                                    return message.warning('该部署已成功!');
+                                }
+                                runDeployment(deployment?.id);
+                            }}
+                        >
+                            重新运行
+                        </Button>
                     </div>
                 </div>
             </div>
