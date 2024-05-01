@@ -6,9 +6,9 @@ import {
     updateCommand,
 } from '@/services/ant-design-pro/commands';
 import { getEnvironments } from '@/services/ant-design-pro/environment';
-import { useRequest } from '@@/plugin-request';
 import {
     ActionType,
+    ProColumns,
     ProForm,
     ProFormGroup,
     ProFormInstance,
@@ -18,6 +18,7 @@ import {
     ProFormTextArea,
 } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-table';
+import { useRequest } from 'ahooks';
 import { Button, Modal } from 'antd';
 import React, { useRef, useState } from 'react';
 
@@ -38,21 +39,34 @@ const Commands: React.FC<{ projectId?: number }> = ({ projectId }) => {
             formRef.current?.setFieldsValue(data);
         }
     };
-    const columns = [
-        { dataIndex: 'id', title: 'ID' },
+    const columns: ProColumns<Command>[] = [
+        { dataIndex: 'id', title: 'ID', search: false },
         { dataIndex: 'name', title: '步骤名称' },
-        { dataIndex: 'step', title: '步骤' },
+        {
+            dataIndex: 'step',
+            title: '步骤',
+            valueEnum: {
+                before_clone: '克隆之前',
+                after_clone: '克隆之后',
+                before_prepare: '准备之后',
+                after_prepare: '准备之后',
+                before_release: '发布之前',
+                after_release: '发布之后',
+            },
+        },
         { dataIndex: 'user', title: '用户' },
         {
             dataIndex: 'optional',
             title: '是否可选',
             render: boolText,
+            search: false,
         },
-        { dataIndex: 'default_selected', title: '默认选中', render: boolText },
-        { dataIndex: 'created_at', title: '创建时间' },
-        { dataIndex: 'updated_at', title: '更新时间' },
+        { dataIndex: 'default_selected', title: '默认选中', render: boolText, search: false },
+        { dataIndex: 'created_at', title: '创建时间', search: false },
+        { dataIndex: 'updated_at', title: '更新时间', search: false },
         {
             title: '操作',
+            search: false,
             render: (data: any | Command) => {
                 return (
                     <div className="flex gap-3">
@@ -104,8 +118,16 @@ const Commands: React.FC<{ projectId?: number }> = ({ projectId }) => {
                         });
                     }}
                 >
-                    <ProFormText initialValue={config?.id} required disabled name="id" label="ID" />
                     <ProFormText
+                        initialValue={config?.id}
+                        required
+                        disabled
+                        hidden
+                        name="id"
+                        label="ID"
+                    />
+                    <ProFormText
+                        hidden
                         initialValue={config?.project_id}
                         required
                         disabled
@@ -137,7 +159,7 @@ const Commands: React.FC<{ projectId?: number }> = ({ projectId }) => {
                         mode="multiple"
                         name="environments"
                         label="环境"
-                        options={environments?.map((data) => ({
+                        options={environments?.data.map((data: any) => ({
                             value: data.id,
                             label: data.name,
                         }))}
