@@ -9,36 +9,56 @@
  *
  * @doc https://umijs.org/docs/guides/proxy
  */
-export default {
-  // 如果需要自定义本地开发服务器  请取消注释按需调整
-  dev: {
-    // localhost:8000/api/** -> https://preview.pro.ant.design/api/**
-    '/api/': {
-      // 要代理的地址
-      target: 'http://localhost:8008',
-      // 配置了这个可以从 http 代理到 https
-      // 依赖 origin 的功能可能需要这个，比如 cookie
-      changeOrigin: true,
-    },
-  },
+const http = require('http');
+var keepAliveAgent = new http.Agent({ keepAlive: true });
 
-  /**
-   * @name 详细的代理配置
-   * @doc https://github.com/chimurai/http-proxy-middleware
-   */
-  test: {
-    // localhost:8000/api/** -> https://preview.pro.ant.design/api/**
-    '/api/': {
-      target: 'https://proapi.azurewebsites.net',
-      changeOrigin: true,
-      pathRewrite: { '^': '' },
+export default {
+    // 如果需要自定义本地开发服务器  请取消注释按需调整
+    dev: {
+        // 127.0.0.1:8000/api/** -> https://preview.pro.ant.design/api/**
+        '/api/': {
+            compress: false,
+            // 要代理的地址
+            target: 'http://127.0.0.1:8008',
+            // 配置了这个可以从 http 代理到 https
+            // 依赖 origin 的功能可能需要这个，比如 cookie
+            // changeOrigin: true,
+            // 是否启用 websocket
+            ws: true,
+            xfwd: true,
+            // 自定义代理事件
+            onProxyReq: (proxyReq: any, req: any, res: any) => {
+                if (req.url.startsWith('/api/notify')) {
+                    // 在代理请求上添加头部，以确保支持 SSE
+                    proxyReq.setHeader('Connection', 'keep-alive');
+                    proxyReq.setHeader('Cache-Control', 'no-cache');
+                    proxyReq.setHeader('Content-Type', 'text/event-stream');
+
+                    res.on('close', () => {
+                        proxyReq.destroy();
+                    });
+                }
+            },
+        },
     },
-  },
-  pre: {
-    '/api/': {
-      target: 'your pre url',
-      changeOrigin: true,
-      pathRewrite: { '^': '' },
+
+    /**
+     * @name 详细的代理配置
+     * @doc https://github.com/chimurai/http-proxy-middleware
+     */
+    test: {
+        // 127.0.0.1:8000/api/** -> https://preview.pro.ant.design/api/**
+        '/api/': {
+            target: 'https://proapi.azurewebsites.net',
+            changeOrigin: true,
+            pathRewrite: { '^': '' },
+        },
     },
-  },
+    pre: {
+        '/api/': {
+            target: 'your pre url',
+            changeOrigin: true,
+            pathRewrite: { '^': '' },
+        },
+    },
 };
