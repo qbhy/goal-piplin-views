@@ -154,6 +154,7 @@ const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
             </Modal>
 
             <ProTable
+                rowKey="id"
                 toolBarRender={() => [
                     <Button key="button" type="primary" onClick={() => setShowForm(true)}>
                         开始部署
