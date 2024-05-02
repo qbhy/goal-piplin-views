@@ -36,7 +36,7 @@ export type ProjectDetail = Project & {
 };
 
 export async function getProjects(params: Record<any, any>) {
-    const result = await request<Paginate<Project>>('/api/project/list', params);
+    const result = await request<Paginate<Project>>('/api/project/list', { params });
     result.page = params.page;
     result.page_size = params.pageSize;
     return result;
