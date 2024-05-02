@@ -47,9 +47,19 @@ export async function getProjectDetail(id: any) {
 }
 
 export async function createProject(params: Record<string, any>) {
-    return request<{ data: Project }>('/api/project/create', { method: 'POST', data: params });
+    return request<{ data: Project; msg?: string }>('/api/project/create', {
+        method: 'POST',
+        data: params,
+    });
 }
 
 export async function updateProject(params: Record<string, any>) {
-    return request<{ data: Project }>('/api/project/update', { method: 'POST', data: params });
+    return request<{ msg?: string }>('/api/project/update', { method: 'POST', data: params });
+}
+
+export async function deleteProject(id: number) {
+    return request<{ successful?: boolean; msg?: string }>('/api/project/delete', {
+        method: 'POST',
+        data: { id },
+    });
 }

@@ -11,7 +11,12 @@ const Editor: React.FC<{ project?: ProjectDetail; onUpdated: () => void }> = ({
     onUpdated,
 }) => {
     const update = async (values: any) => {
-        await updateProject(values).then(() => message.success({ content: '修改成功' }));
+        await updateProject(values).then(({ msg }) => {
+            if (msg) {
+                return message.error(msg);
+            }
+            message.success({ content: '修改成功' });
+        });
         onUpdated();
     };
     const { data: keys } = useRequest(getKeys);
