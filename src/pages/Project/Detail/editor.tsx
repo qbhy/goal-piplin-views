@@ -1,10 +1,11 @@
 import { getGroups } from '@/services/ant-design-pro/group';
-import { getKeys } from '@/services/ant-design-pro/key';
+import { getKeys, Key } from '@/services/ant-design-pro/key';
 import { ProjectDetail, updateProject } from '@/services/ant-design-pro/project';
 import { useRequest } from '@@/plugin-request';
 import { ProForm, ProFormInstance, ProFormSelect, ProFormText } from '@ant-design/pro-components';
-import { message } from 'antd';
-import React, { useRef } from 'react';
+import { Button, message } from 'antd';
+import copy from 'copy-to-clipboard';
+import React, { useRef, useState } from 'react';
 
 const Editor: React.FC<{ project?: ProjectDetail; onUpdated: () => void }> = ({
     project,
@@ -19,7 +20,13 @@ const Editor: React.FC<{ project?: ProjectDetail; onUpdated: () => void }> = ({
         });
         onUpdated();
     };
-    const { data: keys } = useRequest(getKeys);
+    const [currentKey, setKey] = useState<Key>();
+    const { data: keys } = useRequest(async () =>
+        getKeys().then((res) => {
+            setKey(res.data.find((key) => key.id === project?.key_id));
+            return res;
+        }),
+    );
     const { data: groups } = useRequest(getGroups);
     const formRef = useRef<ProFormInstance>();
 
@@ -62,6 +69,9 @@ const Editor: React.FC<{ project?: ProjectDetail; onUpdated: () => void }> = ({
             <ProFormSelect
                 name="key_id"
                 label="密钥"
+                onChange={(_, value: any) => {
+                    setKey(keys?.find((key) => key.id === value.value));
+                }}
                 options={[
                     ...(keys
                         ? keys.map((key) => ({
@@ -71,6 +81,31 @@ const Editor: React.FC<{ project?: ProjectDetail; onUpdated: () => void }> = ({
                         : []),
                 ]}
             />
+
+            <div className="flex gap-3 mb-3">
+                <Button
+                    onClick={() => {
+                        if (copy(currentKey?.public_key || '')) {
+                            message.success('复制公钥成功');
+                        } else {
+                            message.warning('复制公钥失败');
+                        }
+                    }}
+                >
+                    复制公钥
+                </Button>
+                <Button
+                    onClick={() => {
+                        if (copy(currentKey?.private_key || '')) {
+                            message.success('复制私钥成功');
+                        } else {
+                            message.warning('复制私钥失败');
+                        }
+                    }}
+                >
+                    复制私钥
+                </Button>
+            </div>
         </ProForm>
     );
 };
