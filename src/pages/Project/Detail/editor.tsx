@@ -7,7 +7,7 @@ import { Button, message } from 'antd';
 import copy from 'copy-to-clipboard';
 import React, { useRef, useState } from 'react';
 
-const Editor: React.FC<{ project?: ProjectDetail; onUpdated: () => void }> = ({
+const Editor: React.FC<{ project: ProjectDetail; onUpdated: () => void }> = ({
     project,
     onUpdated,
 }) => {

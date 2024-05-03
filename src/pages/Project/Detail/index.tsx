@@ -3,6 +3,7 @@ import ConfigFiles from '@/pages/Project/Detail/config_files';
 import Deployments from '@/pages/Project/Detail/deployments';
 import Editor from '@/pages/Project/Detail/editor';
 import Environments from '@/pages/Project/Detail/environments';
+import Members from '@/pages/Project/Detail/members';
 import ShareFiles from '@/pages/Project/Detail/share_files';
 import { getProjectDetail } from '@/services/ant-design-pro/project';
 import { useRequest } from 'ahooks';
@@ -47,6 +48,11 @@ export default () => {
                         label: '共享目录',
                         children: <ShareFiles projectId={project?.id} />,
                     },
+                    {
+                        key: 'members',
+                        label: '项目成员',
+                        children: project && <Members project={project} update={refresh} />,
+                    },
                     // {
                     //     key: 'callback',
                     //     label: '部署回调',
@@ -55,7 +61,7 @@ export default () => {
                     {
                         key: 'editor',
                         label: '更新项目',
-                        children: <Editor project={project} onUpdated={() => refresh} />,
+                        children: project && <Editor project={project} onUpdated={refresh} />,
                     },
                 ]}
             ></Tabs>

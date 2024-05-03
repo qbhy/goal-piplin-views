@@ -30,9 +30,17 @@ export type Project = {
     updated_at: string;
 };
 
+export type ProjectMember = {
+    user_id: number;
+    username: string;
+    nickname: string;
+    avatar: string;
+};
+
 export type ProjectDetail = Project & {
     key: Key | null;
     group: Group | null;
+    members: ProjectMember[];
 };
 
 export async function getProjects(params: Record<any, any>) {
