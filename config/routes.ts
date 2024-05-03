@@ -11,68 +11,74 @@
  * @doc https://umijs.org/docs/guides/routes
  */
 export default [
-  {
-    path: '/user',
-    layout: false,
-    routes: [
-      {
-        name: 'login',
-        path: '/user/login',
-        component: './User/Login',
-      },
-    ],
-  },
-  {
-    path: '/welcome',
-    name: 'welcome',
-    icon: 'smile',
-    component: './Welcome',
-  },
-  {
-    path: '/cabinet/list',
-    name: '机柜',
-    component: './Cabinet/List',
-  },
-  {
-    path: '/key/list',
-    name: '密钥',
-    component: './Key/List',
-  },
-  {
-    path: '/group/list',
-    name: '分组',
-    component: './Group/List',
-  },
-  {
-    path: '/project/list',
-    name: '项目列表',
-    component: './Project/List',
-  },
-  {
-    menu: false,
-    path: '/project/create',
-    name: '项目表单',
-    component: './Project/Form',
-  },
-  {
-    menu: false,
-    path: '/project/detail',
-    name: '项目详情',
-    component: './Project/Detail',
-  },
-  {
-    menu: false,
-    path: '/project/deployment',
-    name: '项目详情',
-    component: './Project/Deployment',
-  },
-  {
-    path: '/',
-    redirect: '/welcome',
-  },
-  {
-    path: '*',
-    layout: false,
-    component: './404',
-  },
+    {
+        path: '/user',
+        layout: false,
+        routes: [
+            {
+                name: 'login',
+                path: '/user/login',
+                component: './User/Login',
+            },
+        ],
+    },
+    {
+        path: '/welcome',
+        name: 'welcome',
+        icon: 'smile',
+        component: './Welcome',
+    },
+    {
+        path: '/project/list',
+        name: '项目列表',
+        component: './Project/List',
+    },
+    {
+        path: '/cabinet/list',
+        name: '机柜',
+        component: './Cabinet/List',
+    },
+    {
+        path: '/key/list',
+        name: '密钥',
+        component: './Key/List',
+    },
+    {
+        path: '/group/list',
+        name: '分组',
+        component: './Group/List',
+    },
+    {
+        menu: false,
+        path: '/user/list',
+        name: '用户管理',
+        component: './User/List',
+    },
+    {
+        menu: false,
+        path: '/project/create',
+        name: '项目表单',
+        component: './Project/Form',
+    },
+    {
+        menu: false,
+        path: '/project/detail',
+        name: '项目详情',
+        component: './Project/Detail',
+    },
+    {
+        menu: false,
+        path: '/project/deployment',
+        name: '项目详情',
+        component: './Project/Deployment',
+    },
+    {
+        path: '/',
+        redirect: '/welcome',
+    },
+    {
+        path: '*',
+        layout: false,
+        component: './404',
+    },
 ];
