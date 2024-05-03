@@ -98,6 +98,11 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu, childre
     }
 
     const menuItems = [
+        {
+            key: '/invite/list',
+            icon: <UserOutlined />,
+            label: '邀请管理',
+        },
         ...(currentUser.role === 'admin'
             ? [
                   {
