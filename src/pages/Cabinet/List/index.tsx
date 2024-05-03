@@ -77,16 +77,20 @@ const List: React.FC = () => {
                     loading={loading}
                     onFinish={async (values: Record<string, any>) => {
                         setLoading(true);
-                        const callback = () => {
-                            setLoading(false);
-                            setCabinetForm(undefined);
-                            tableRef.current?.reload();
-                        };
                         (cabinet?.id
                             ? updateCabinet({ id: cabinet.id, ...values })
                             : createCabinet(values)
                         )
-                            .then(callback)
+                            .then(({ msg }) => {
+                                setLoading(false);
+                                setCabinetForm(undefined);
+                                tableRef.current?.reload();
+                                if (msg) {
+                                    message.error(msg);
+                                } else {
+                                    message.success('修改成功!');
+                                }
+                            })
                             .catch((err) => {
                                 console.log(err);
                             });
