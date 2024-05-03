@@ -18,10 +18,17 @@ export async function getKeys(params: any = { page: 1, pageSize: 100 }) {
 }
 
 export async function createKey(params: Record<string, any>) {
-    return await request<{ data: Key }>('/api/key/create', {
+    return await request<{ data: Key; msg?: string }>('/api/key/create', {
         data: params,
         method: 'POST',
-    }).then((res) => res.data);
+    });
+}
+
+export async function updateKey(params: Record<string, any>) {
+    return await request<{ data: Key; msg?: string }>('/api/key/update', {
+        data: params,
+        method: 'POST',
+    });
 }
 
 export async function deleteKeys(id: number[]) {

@@ -1,4 +1,4 @@
-import { Key, createKey, deleteKeys, getKeys } from '@/services/ant-design-pro/key';
+import { Key, createKey, deleteKeys, getKeys, updateKey } from '@/services/ant-design-pro/key';
 import {
     ActionType,
     ProColumns,
@@ -69,19 +69,20 @@ const List: React.FC = () => {
                     loading={loading}
                     onFinish={async (values: Record<string, any>) => {
                         setLoading(true);
-                        const callback = () => {
+                        (key?.id ? updateKey : createKey)(values).then(({ msg }) => {
                             setLoading(false);
                             setForm(undefined);
                             tableRef.current?.reload();
-                        };
-                        createKey(values)
-                            .then(callback)
-                            .catch((err) => {
-                                console.log(err);
-                            });
+                            if (msg) {
+                                message.error(msg);
+                            } else {
+                                message.success('修改成功!');
+                            }
+                        });
                     }}
                     initialValues={key}
                 >
+                    <ProFormText required hidden name="id" label="ID" />
                     <ProFormText
                         required
                         name="name"
