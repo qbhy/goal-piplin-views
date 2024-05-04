@@ -58,7 +58,7 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu, childre
     };
     const { styles } = useStyles();
 
-    const { initialState, setInitialState } = useModel('@@initialState');
+    const { initialState, setInitialState, refresh } = useModel('@@initialState');
 
     const onMenuClick = useCallback(
         (event: MenuInfo) => {
@@ -91,9 +91,10 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu, childre
         return loading;
     }
 
-    const { currentUser } = initialState;
+    let { currentUser } = initialState;
 
     if (!currentUser || !currentUser.username) {
+        refresh();
         return loading;
     }
 
