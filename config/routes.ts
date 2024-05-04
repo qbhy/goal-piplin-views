@@ -56,9 +56,15 @@ export default [
     },
     {
         menu: false,
-        path: '/invite/list',
-        name: '邀请管理',
+        path: '/user_project/list',
+        name: '项目邀请',
         component: './Project/Invite',
+    },
+    {
+        menu: false,
+        path: '/user_group/list',
+        name: '项目邀请',
+        component: './Group/Invite',
     },
     {
         menu: false,
