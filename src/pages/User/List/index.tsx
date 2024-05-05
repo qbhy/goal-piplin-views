@@ -45,7 +45,7 @@ const List: React.FC = () => {
             render: (data: any | User) => {
                 return (
                     <div className="flex gap-3">
-                        <Button onClick={() => setForm(data)}>详情</Button>
+                        <Button onClick={() => setForm({ ...data, password: '' })}>详情</Button>
                         <Button
                             danger
                             onClick={() =>
@@ -88,6 +88,7 @@ const List: React.FC = () => {
                             if (msg) {
                                 return message.error(msg);
                             }
+                            message.success(user?.id ? '更新成功' : '创建成功');
                             tableRef.current?.reload();
                         });
                     }}
