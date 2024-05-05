@@ -10,10 +10,10 @@ import * as login from './login';
 import * as project from './project';
 
 export default {
-  api,
-  login,
-  project,
-  key,
-  deployment,
-  environment,
+    api,
+    login,
+    project,
+    key,
+    deployment,
+    environment,
 };
