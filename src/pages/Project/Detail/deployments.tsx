@@ -15,6 +15,7 @@ import {
 import { ProTable } from '@ant-design/pro-table';
 import { AutoComplete, Button, Modal } from 'antd';
 import classNames from 'classnames';
+import copy from 'copy-to-clipboard';
 import React, { useRef, useState } from 'react';
 import { Link, useNavigate } from 'umi';
 
@@ -150,6 +151,24 @@ const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
                                 initialValue={command.default_selected}
                             />
                         ))}
+
+                    <Button
+                        className="mb-5"
+                        onClick={() =>
+                            copy(`curl -X POST ${location.origin}/api/deployment/go \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "uuid": "${project.uuid}",
+    "version": "${formRef.current?.getFieldValue('version')}",
+    "comment": "${formRef.current?.getFieldValue('comment')}",
+    "params": ${JSON.stringify(formRef.current?.getFieldValue('params') || null)},
+    "environments": ${JSON.stringify(formRef.current?.getFieldValue('environments'))}
+  }'
+`)
+                        }
+                    >
+                        复制 CURL 命令
+                    </Button>
                 </ProForm>
             </Modal>
 
