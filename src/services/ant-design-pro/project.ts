@@ -61,6 +61,13 @@ export async function createProject(params: Record<string, any>) {
     });
 }
 
+export async function copyProject(params: Record<string, any>) {
+    return request<{ data: Project; msg?: string }>('/api/project/copy', {
+        method: 'POST',
+        data: params,
+    });
+}
+
 export async function updateProject(params: Record<string, any>) {
     return request<{ msg?: string }>('/api/project/update', { method: 'POST', data: params });
 }
