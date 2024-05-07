@@ -64,6 +64,9 @@ export default function () {
             if (newDeployment.status === 'finished') {
                 message.success({ content: `${data?.project.name} 部署成功!` });
             }
+            if (newDeployment.status === 'failed') {
+                message.success({ content: `${data?.project.name} 部署失败!` });
+            }
             if (deployment?.id === newDeployment.id) {
                 setDeployment(newDeployment);
             }
