@@ -200,9 +200,8 @@ const Environments: React.FC<{ projectId?: number }> = ({ projectId }) => {
                 request={async (params) =>
                     getEnvironments({
                         project_id: projectId,
-                        page: params.current,
-                        page_size: params.pageSize,
                         name: params.name,
+                        ...params,
                     })
                 }
                 pagination={{ pageSize: 10 }}

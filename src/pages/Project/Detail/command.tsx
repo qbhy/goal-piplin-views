@@ -214,8 +214,6 @@ const Commands: React.FC<{ projectId?: number }> = ({ projectId }) => {
                 request={async (params) => {
                     return getCommands({
                         project_id: projectId,
-                        page: params.current,
-                        page_size: params.pageSize,
                         ...params,
                     });
                 }}

@@ -143,9 +143,8 @@ const ShareFiles: React.FC<{ projectId?: number }> = ({ projectId }) => {
                 request={async (params) =>
                     getShareFiles({
                         project_id: projectId,
-                        page: params.current,
-                        page_size: params.pageSize,
                         name: params.name,
+                        ...params,
                     })
                 }
                 pagination={{ pageSize: 10 }}
