@@ -60,6 +60,9 @@ export default function () {
     useEffect(() => {
         const eventSource = notify();
         eventSource.onmessage = (event) => {
+            if (event.data === 'heartbeat') {
+                return;
+            }
             const newDeployment: Deployment = JSON.parse(event.data);
             if (newDeployment.status === 'finished') {
                 message.success({ content: `${data?.project.name} 部署成功!` });
