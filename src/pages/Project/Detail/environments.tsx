@@ -18,7 +18,7 @@ import {
     ProFormText,
 } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-table';
-import { Button, Divider, Modal } from 'antd';
+import { Button, Divider, Modal, message } from 'antd';
 import React, { useRef, useState } from 'react';
 
 const Environments: React.FC<{ projectId?: number }> = ({ projectId }) => {
@@ -105,6 +105,9 @@ const Environments: React.FC<{ projectId?: number }> = ({ projectId }) => {
                     title="编辑环境"
                     loading={loading}
                     onFinish={async (values: Record<string, any>) => {
+                        if (!values.name) {
+                            return message.warning('请填写环境名称');
+                        }
                         setLoading(true);
                         updateEnvironment({ ...values, project_id: projectId }).then(() => {
                             setLoading(false);
