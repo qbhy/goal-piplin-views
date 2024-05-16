@@ -21,10 +21,10 @@ export type Project = {
     project_path: string;
     default_branch: string;
     settings: {
-        branches: string[];
-        tags: string[];
-        env_vars: string[];
-        callbacks: string[];
+        branches?: string[];
+        tags?: string[];
+        env_vars?: string[];
+        callbacks?: string[];
     };
     created_at: string;
     updated_at: string;

@@ -143,11 +143,11 @@ const List: React.FC = () => {
                         name="default_branch"
                         label="默认分支"
                         options={[
-                            ...(targetProject?.settings.branches.map((branch) => ({
+                            ...(targetProject?.settings.branches?.map((branch) => ({
                                 label: '分支：' + branch,
                                 value: branch,
                             })) || []),
-                            ...(targetProject?.settings.tags.map((tag) => ({
+                            ...(targetProject?.settings.tags?.map((tag) => ({
                                 label: '分支：' + tag,
                                 value: tag,
                             })) || []),
