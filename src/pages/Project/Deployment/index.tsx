@@ -68,7 +68,7 @@ export default function () {
                 message.success({ content: `${data?.project.name} 部署成功!` });
             }
             if (newDeployment.status === 'failed') {
-                message.success({ content: `${data?.project.name} 部署失败!` });
+                message.warning({ content: `${data?.project.name} 部署失败!` });
             }
             if (deployment?.id === newDeployment.id) {
                 setDeployment(newDeployment);
@@ -87,11 +87,15 @@ export default function () {
     return (
         <Spin spinning={loading}>
             <Modal
+                style={{ width: '100%' }}
                 open={output !== undefined}
                 onOk={() => setOutput(undefined)}
                 onCancel={() => setOutput(undefined)}
             >
-                <div className="pt-5">{output?.outputs || '无输出'}</div>
+                <div
+                    className="pt-5 w-full"
+                    dangerouslySetInnerHTML={{ __html: output?.outputs || '无输出' }}
+                ></div>
             </Modal>
 
             <div className="p-5 text-2xl">项目：{data?.project.name}</div>

@@ -148,7 +148,7 @@ const Commands: React.FC<{ projectId?: number }> = ({ projectId }) => {
                         options={[
                             { value: 'before_clone', label: '克隆之前' },
                             { value: 'after_clone', label: '克隆之后' },
-                            { value: 'before_prepare', label: '准备之后' },
+                            { value: 'before_prepare', label: '准备之前' },
                             { value: 'after_prepare', label: '准备之后' },
                             { value: 'before_release', label: '发布之前' },
                             { value: 'after_release', label: '发布之后' },
