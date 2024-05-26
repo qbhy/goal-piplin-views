@@ -94,7 +94,9 @@ export default function () {
             >
                 <div
                     className="pt-5 w-full"
-                    dangerouslySetInnerHTML={{ __html: output?.outputs || '无输出' }}
+                    dangerouslySetInnerHTML={{
+                        __html: (output?.outputs || '无输出').replaceAll('\n', '<br>'),
+                    }}
                 ></div>
             </Modal>
 
