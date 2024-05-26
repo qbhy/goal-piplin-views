@@ -87,7 +87,7 @@ export default function () {
     return (
         <Spin spinning={loading}>
             <Modal
-                style={{ width: '100%' }}
+                width="80%"
                 open={output !== undefined}
                 onOk={() => setOutput(undefined)}
                 onCancel={() => setOutput(undefined)}
