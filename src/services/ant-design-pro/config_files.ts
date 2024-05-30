@@ -23,14 +23,14 @@ export async function createConfigFile(params: Record<string, any>) {
     return await request<{ data: ConfigFile }>('/api/config/create', {
         data: params,
         method: 'POST',
-    }).then((res) => res.data);
+    });
 }
 
 export async function updateConfigFile(params: Record<string, any>) {
     return await request('/api/config/update', {
         data: params,
         method: 'POST',
-    }).then((res) => res.data);
+    });
 }
 
 export async function deleteConfigFiles(id: number[]) {

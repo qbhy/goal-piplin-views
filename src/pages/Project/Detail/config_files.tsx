@@ -17,7 +17,7 @@ import {
     ProFormTextArea,
 } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-table';
-import { Button, Modal } from 'antd';
+import { Button, Modal, message } from 'antd';
 import React, { useRef, useState } from 'react';
 
 const ConfigFiles: React.FC<{ projectId?: number }> = ({ projectId }) => {
@@ -80,17 +80,19 @@ const ConfigFiles: React.FC<{ projectId?: number }> = ({ projectId }) => {
             >
                 <ProForm
                     formRef={formRef}
-                    title="新建配置文件"
                     loading={loading}
                     onFinish={async (values: Record<string, any>) => {
                         setLoading(true);
                         (config?.id ? updateConfigFile : createConfigFile)({
                             ...values,
                             project_id: projectId,
-                        }).then(() => {
+                        }).then((res) => {
                             setLoading(false);
                             setForm(undefined);
                             tableRef.current?.reload();
+                            if (res.msg) {
+                                message.error(res.msg);
+                            }
                         });
                     }}
                 >
