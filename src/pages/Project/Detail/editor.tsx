@@ -3,7 +3,8 @@ import { getKeys, Key } from '@/services/ant-design-pro/key';
 import { ProjectDetail, updateProject } from '@/services/ant-design-pro/project';
 import { useRequest } from '@@/plugin-request';
 import { ProForm, ProFormInstance, ProFormSelect, ProFormText } from '@ant-design/pro-components';
-import { Button, message } from 'antd';
+import { ProFormItem } from '@ant-design/pro-form';
+import { AutoComplete, Button, message } from 'antd';
 import copy from 'copy-to-clipboard';
 import React, { useRef, useState } from 'react';
 
@@ -50,7 +51,9 @@ const Editor: React.FC<{ project: ProjectDetail; onUpdated: () => void }> = ({
         <ProForm formRef={formRef} onFinish={update} initialValues={project}>
             <ProFormText name="id" label="ID" disabled hidden />
             <ProFormText name="name" label="名称" />
-            <ProFormSelect name="default_branch" label="默认分支" options={branches} />
+            <ProFormItem name="default_branch" label="默认分支">
+                <AutoComplete className="w-full mb-5" placeholder="如：master" options={branches} />
+            </ProFormItem>
             <ProFormText name="project_path" label="项目路径" />
             <ProFormText name="repo_address" label="仓库地址" />
             <ProFormSelect

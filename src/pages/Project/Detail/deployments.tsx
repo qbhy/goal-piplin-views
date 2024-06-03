@@ -12,6 +12,7 @@ import {
     ProFormSwitch,
     ProFormText,
 } from '@ant-design/pro-components';
+import { ProFormItem } from '@ant-design/pro-form';
 import { ProTable } from '@ant-design/pro-table';
 import { AutoComplete, Button, Modal } from 'antd';
 import classNames from 'classnames';
@@ -115,19 +116,13 @@ const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
 
                     <ProFormText name="version" hidden initialValue={project.default_branch} />
 
-                    <div className="mb-1">分支</div>
-                    <AutoComplete
-                        className="w-full mb-5"
-                        defaultValue={project.default_branch}
-                        placeholder="如：master"
-                        options={branches}
-                        onChange={(version) => {
-                            formRef.current?.setFieldValue('version', version);
-                        }}
-                        onSelect={(version) => {
-                            formRef.current?.setFieldValue('version', version);
-                        }}
-                    />
+                    <ProFormItem name="version" label="版本/分支">
+                        <AutoComplete
+                            className="w-full mb-5"
+                            placeholder="如：master"
+                            options={branches}
+                        />
+                    </ProFormItem>
                     <ProFormSelect
                         required
                         mode="multiple"
