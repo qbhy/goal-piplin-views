@@ -1,5 +1,10 @@
 import { getCommands } from '@/services/ant-design-pro/commands';
-import { createDeployment, Deployment, getDeployments } from '@/services/ant-design-pro/deployment';
+import {
+    createDeployment,
+    Deployment,
+    getDeployments,
+    rollbackDeployment,
+} from '@/services/ant-design-pro/deployment';
 import { getEnvironments } from '@/services/ant-design-pro/environment';
 import { ProjectDetail } from '@/services/ant-design-pro/project';
 import { useRequest } from '@@/plugin-request';
@@ -11,10 +16,11 @@ import {
     ProFormSelect,
     ProFormSwitch,
     ProFormText,
+    ProFormTextArea,
 } from '@ant-design/pro-components';
 import { ProFormItem } from '@ant-design/pro-form';
 import { ProTable } from '@ant-design/pro-table';
-import { AutoComplete, Button, Modal } from 'antd';
+import { AutoComplete, Button, message, Modal } from 'antd';
 import classNames from 'classnames';
 import copy from 'copy-to-clipboard';
 import React, { useRef, useState } from 'react';
@@ -22,6 +28,7 @@ import { Link, useNavigate } from 'umi';
 
 const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
     const [showForm, setShowForm] = useState(false);
+    const [showRollbackForm, setShowRollbackForm] = useState<number>();
     const [loading, setLoading] = useState(false);
     const tableRef = useRef<ActionType>();
     const { data: environments } = useRequest(() => getEnvironments({ project_id: project?.id }));
@@ -63,9 +70,21 @@ const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
             search: false,
             render: (data: any) => {
                 return (
-                    <Link to={`/project/deployment?id=${data.id}`}>
-                        <Button>详情</Button>
-                    </Link>
+                    <div>
+                        <Button.Group>
+                            <Button>
+                                <Link
+                                    className="w-full h-full"
+                                    to={`/project/deployment?id=${data.id}`}
+                                >
+                                    详情
+                                </Link>
+                            </Button>
+                            {data.status === 'finished' && (
+                                <Button onClick={() => setShowRollbackForm(data.id)}>撤回</Button>
+                            )}
+                        </Button.Group>
+                    </div>
                 );
             },
         },
@@ -89,6 +108,26 @@ const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
 
     return (
         <div className="">
+            <Modal
+                open={showRollbackForm !== undefined}
+                onCancel={() => setShowRollbackForm(undefined)}
+            >
+                <ProForm
+                    onFinish={async (value) => {
+                        rollbackDeployment({ id: Number(showRollbackForm), ...value })
+                            .then(({ msg }) => {
+                                if (msg) {
+                                    return message.error(msg);
+                                }
+                                message.success('回滚成功');
+                            })
+                            .finally(() => setShowRollbackForm(undefined));
+                    }}
+                >
+                    <ProFormTextArea name="before_release" label="切换之前运行的脚本" />
+                    <ProFormTextArea name="after_release" label="切换之后运行的脚本" />
+                </ProForm>
+            </Modal>
             <Modal
                 open={showForm}
                 onCancel={() => setShowForm(false)}

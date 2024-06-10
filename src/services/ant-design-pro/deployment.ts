@@ -51,6 +51,10 @@ export async function runDeployment(id: any) {
     });
 }
 
+export async function rollbackDeployment(values: any) {
+    return await request('/api/deployment/rollback', { data: values, method: 'POST' });
+}
+
 export async function getDeploymentDetail(id: any) {
     return await request<{
         data: {
