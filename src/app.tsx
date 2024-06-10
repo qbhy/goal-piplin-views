@@ -38,10 +38,12 @@ export async function getInitialState(): Promise<{
         return {
             fetchUserInfo,
             currentUser,
+            loading: false,
             settings: defaultSettings as Partial<LayoutSettings>,
         };
     }
     return {
+        loading: true,
         fetchUserInfo,
         settings: defaultSettings as Partial<LayoutSettings>,
     };

@@ -110,19 +110,22 @@ export default function () {
                 <div>
                     <div>版本：</div>
                     <div className="mb-3">{deployment?.version}</div>
-
-                    <div>状态</div>
-                    <div
-                        className={classNames({
-                            'text-green-500': deployment?.status === 'finished',
-                            'text-blue-500': deployment?.status === 'running',
-                            'text-red-500': deployment?.status === 'failed',
-                        })}
-                    >
-                        {deployment?.status}
-                    </div>
+                    <div>提交：</div>
+                    <div className="mb-3">{deployment?.commit}</div>
                 </div>
-                <div className="flex justify-end">
+                <div className="">
+                    <div className="flex">
+                        <div>状态：</div>
+                        <div
+                            className={classNames({
+                                'text-green-500': deployment?.status === 'finished',
+                                'text-blue-500': deployment?.status === 'running',
+                                'text-red-500': deployment?.status === 'failed',
+                            })}
+                        >
+                            {deployment?.status}
+                        </div>
+                    </div>
                     <div className="p-3">
                         <Button
                             onClick={() => {

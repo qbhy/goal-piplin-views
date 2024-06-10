@@ -8,6 +8,7 @@ export type Deployment = {
     project_id: number;
     version: string;
     comment: string;
+    commit: string;
     status: string;
     params: Record<string, boolean>;
     results: CommandResult[];
