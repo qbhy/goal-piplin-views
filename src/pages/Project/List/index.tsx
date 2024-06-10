@@ -16,7 +16,7 @@ import {
     ProFormText,
 } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-table';
-import { Button, message, Modal } from 'antd';
+import { Button, message, Modal, Spin } from 'antd';
 import React, { useRef, useState } from 'react';
 import { Link, useNavigate } from 'umi';
 
@@ -75,15 +75,15 @@ const List: React.FC = () => {
             },
         },
     ];
-    const { data: groups } = useRequest(getGroups);
-    const { data: keys } = useRequest(async () =>
+    const { data: groups, loading: groupLoading } = useRequest(getGroups);
+    const { data: keys, loading: keyLoading } = useRequest(async () =>
         getKeys().then((res) => {
             return res;
         }),
     );
 
     return (
-        <div className="">
+        <Spin spinning={loading || groupLoading || keyLoading}>
             <Modal
                 width="90%"
                 open={targetProject !== undefined}
@@ -173,7 +173,6 @@ const List: React.FC = () => {
 
             <ProTable
                 actionRef={tableRef}
-                loading={loading}
                 toolBarRender={() => [
                     <Button onClick={() => navigate('/project/create')} key="button" type="primary">
                         新建
@@ -183,7 +182,7 @@ const List: React.FC = () => {
                 request={getProjects}
                 pagination={{ pageSize: 10 }}
             ></ProTable>
-        </div>
+        </Spin>
     );
 };
 
