@@ -62,7 +62,11 @@ const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
             title: '操作',
             search: false,
             render: (data: any) => {
-                return <Link to={`/project/deployment?id=${data.id}`}>详情</Link>;
+                return (
+                    <Link to={`/project/deployment?id=${data.id}`}>
+                        <Button>详情</Button>
+                    </Link>
+                );
             },
         },
     ];

@@ -36,7 +36,6 @@ const Members: React.FC<{ project: ProjectDetail; update: () => void }> = ({ pro
 
     const columns: ProColumns<ProjectMember>[] = [
         { dataIndex: 'id', title: '用户ID', search: false },
-        { dataIndex: 'user_id', title: '用户ID', search: false },
         { dataIndex: 'username', title: '用户名', search: false },
         { dataIndex: 'nickname', title: '昵称', search: false },
         {
@@ -57,7 +56,7 @@ const Members: React.FC<{ project: ProjectDetail; update: () => void }> = ({ pro
                                 Modal.confirm({
                                     onOk: () => {
                                         setLoading(true);
-                                        deleteUserProject([item.id]).then(({ msg }) => {
+                                        deleteUserProject(item.id).then(({ msg }) => {
                                             tableRef.current?.reload();
                                             setLoading(false);
                                             if (msg) {
@@ -135,9 +134,8 @@ const Members: React.FC<{ project: ProjectDetail; update: () => void }> = ({ pro
             </Modal>
 
             <ProTable
-                search={false}
                 dataSource={project.members}
-                rowKey="user_id"
+                rowKey="id"
                 actionRef={tableRef}
                 toolBarRender={() => [
                     <Button

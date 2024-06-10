@@ -25,7 +25,7 @@ import React, { useRef, useState } from 'react';
 const boolText = (data: any) => {
     return data ? '是' : '否';
 };
-const Commands: React.FC<{ projectId?: number }> = ({ projectId }) => {
+const Commands: React.FC<{ projectId: number }> = ({ projectId }) => {
     const [loading, setLoading] = useState(false);
     const [config, setConfig] = useState<Command>();
     const { data: environments, refresh: refreshEnv } = useRequest(() =>
@@ -186,6 +186,7 @@ const Commands: React.FC<{ projectId?: number }> = ({ projectId }) => {
             </Modal>
 
             <ProTable
+                rowKey="id"
                 actionRef={tableRef}
                 toolBarRender={() => [
                     <Button

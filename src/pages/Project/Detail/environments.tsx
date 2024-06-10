@@ -21,7 +21,7 @@ import { ProTable } from '@ant-design/pro-table';
 import { Button, Divider, Modal, message } from 'antd';
 import React, { useRef, useState } from 'react';
 
-const Environments: React.FC<{ projectId?: number }> = ({ projectId }) => {
+const Environments: React.FC<{ projectId: number }> = ({ projectId }) => {
     const [showForm, setShowForm] = useState(false);
     const [loading, setLoading] = useState(false);
     const [env, setEnv] = useState<Environment>();
@@ -192,6 +192,7 @@ const Environments: React.FC<{ projectId?: number }> = ({ projectId }) => {
             </Modal>
 
             <ProTable
+                rowKey="id"
                 actionRef={tableRef}
                 toolBarRender={() => [
                     // todo 添加环境，弹出表单 (modal)

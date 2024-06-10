@@ -11,7 +11,7 @@ import { Spin, Tabs } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 
 export default () => {
-    const [params] = useSearchParams();
+    const [params, setParams] = useSearchParams();
     const {
         data: project,
         loading,
@@ -20,8 +20,12 @@ export default () => {
     return (
         <Spin spinning={loading}>
             <Tabs
-                defaultActiveKey="logs"
+                onChange={(e) => {
+                    setParams({ id: params.get('id') || '', tab: e });
+                }}
+                defaultActiveKey={params.get('tab') || 'logs'}
                 tabPosition="left"
+                destroyInactiveTabPane={true}
                 items={[
                     {
                         key: 'logs',
@@ -31,17 +35,17 @@ export default () => {
                     {
                         key: 'environments',
                         label: '部署环境',
-                        children: <Environments projectId={project?.id} />,
+                        children: project && <Environments projectId={project.id} />,
                     },
                     {
                         key: 'steps',
                         label: '部署步骤',
-                        children: <Commands projectId={project?.id} />,
+                        children: project && <Commands projectId={project.id} />,
                     },
                     {
                         key: 'config',
                         label: '配置文件',
-                        children: <ConfigFiles projectId={project?.id} />,
+                        children: project && <ConfigFiles projectId={project.id} />,
                     },
                     {
                         key: 'share_files',

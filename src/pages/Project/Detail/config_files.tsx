@@ -20,7 +20,7 @@ import { ProTable } from '@ant-design/pro-table';
 import { Button, Modal, message } from 'antd';
 import React, { useRef, useState } from 'react';
 
-const ConfigFiles: React.FC<{ projectId?: number }> = ({ projectId }) => {
+const ConfigFiles: React.FC<{ projectId: number }> = ({ projectId }) => {
     const [loading, setLoading] = useState(false);
     const [config, setConfig] = useState<ConfigFile>();
     const { data: environments, refresh: refreshEnv } = useRequest(() =>
