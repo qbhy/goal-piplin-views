@@ -16,7 +16,7 @@ import {
     ProFormText,
 } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-table';
-import { Button, message, Modal, Spin } from 'antd';
+import { Button, Dropdown, message, Modal, Spin } from 'antd';
 import React, { useRef, useState } from 'react';
 import { Link, useNavigate } from 'umi';
 
@@ -40,36 +40,48 @@ const List: React.FC = () => {
             render: (data: any | Project) => {
                 return (
                     <div className="flex gap-3 items-center">
-                        <Link to={`/project/detail?id=${data.id}`}>详情</Link>
-                        <Button
-                            onClick={() => {
-                                setTargetProject(data);
-                                setTimeout(() => formRef.current?.setFieldsValue(data), 100);
+                        <Dropdown
+                            menu={{
+                                items: [
+                                    { key: 'copy', label: '复制项目' },
+                                    { key: 'delete', label: '删除项目' },
+                                ],
+                                onClick: (e) => {
+                                    switch (e.key) {
+                                        case 'copy':
+                                            setTargetProject(data);
+                                            setTimeout(
+                                                () => formRef.current?.setFieldsValue(data),
+                                                100,
+                                            );
+                                            break;
+                                        case 'delete':
+                                            Modal.confirm({
+                                                onOk: () => {
+                                                    setLoading(true);
+                                                    deleteProject(data.id).then(({ msg }) => {
+                                                        if (msg !== undefined) {
+                                                            return message.error(msg);
+                                                        }
+                                                        message.success('删除成功!');
+                                                        tableRef.current?.reload();
+                                                        setLoading(false);
+                                                    });
+                                                },
+                                                title: `确定删除项目 "${data.name}" 吗？`,
+                                            });
+                                            break;
+                                    }
+                                },
                             }}
                         >
-                            复制
-                        </Button>
-                        <Button
-                            danger={true}
-                            onClick={() =>
-                                Modal.confirm({
-                                    onOk: () => {
-                                        setLoading(true);
-                                        deleteProject(data.id).then(({ msg }) => {
-                                            if (msg !== undefined) {
-                                                return message.error(msg);
-                                            }
-                                            message.success('删除成功!');
-                                            tableRef.current?.reload();
-                                            setLoading(false);
-                                        });
-                                    },
-                                    title: `确定删除项目 "${data.name}" 吗？`,
-                                })
-                            }
-                        >
-                            删除
-                        </Button>
+                            <Link
+                                className="py-1.5 px-4 border rounded-lg hover:border-blue-300"
+                                to={`/project/detail?id=${data.id}`}
+                            >
+                                进入项目
+                            </Link>
+                        </Dropdown>
                     </div>
                 );
             },
