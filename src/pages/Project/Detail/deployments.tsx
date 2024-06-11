@@ -28,7 +28,7 @@ import { Link, useNavigate } from 'umi';
 
 const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
     const [showForm, setShowForm] = useState(false);
-    const [showRollbackForm, setShowRollbackForm] = useState<Deployment>();
+    const [showRollbackForm, setShowRollbackForm] = useState<Deployment & { outputs?: string[] }>();
     const [loading, setLoading] = useState(false);
     const tableRef = useRef<ActionType>();
     const { data: environments } = useRequest(() => getEnvironments({ project_id: project?.id }));
@@ -120,43 +120,61 @@ const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
                     </div>
                 }
             >
-                <ProForm
-                    onFinish={async (value) => {
-                        rollbackDeployment({ id: Number(showRollbackForm?.id), ...value })
-                            .then(({ msg }) => {
-                                if (msg) {
-                                    return message.error(msg);
-                                }
-                                message.success('回滚成功');
-                            })
-                            .finally(() => setShowRollbackForm(undefined));
-                    }}
-                >
-                    {commands && (
-                        <ProFormSelect
-                            label="部署步骤"
-                            name="commands"
-                            mode="multiple"
-                            initialValue={commands
-                                .filter(
-                                    (cmd) =>
-                                        ['before_release', 'after_release'].includes(cmd.step) &&
-                                        cmd.default_selected,
-                                )
-                                .map((cmd) => cmd.id)}
-                            options={commands
-                                .filter((cmd) =>
-                                    ['before_release', 'after_release'].includes(cmd.step),
-                                )
-                                .map((cmd) => ({
-                                    value: cmd.id,
-                                    label: `${cmd.name}(${cmd.step})`,
-                                }))}
-                        />
-                    )}
-                    <ProFormTextArea name="before_release" label="切换之前运行的脚本" />
-                    <ProFormTextArea name="after_release" label="切换之后运行的脚本" />
-                </ProForm>
+                {showRollbackForm?.outputs ? (
+                    <div>
+                        <div>回滚成功</div>
+                        <div
+                            className="py-3 mt-3"
+                            dangerouslySetInnerHTML={{
+                                __html: showRollbackForm?.outputs
+                                    .join('<br/>')
+                                    .replaceAll('\n', '<br/>'),
+                            }}
+                        ></div>
+                    </div>
+                ) : (
+                    <ProForm
+                        onFinish={async (value) => {
+                            rollbackDeployment({ id: Number(showRollbackForm?.id), ...value })
+                                .then(({ msg, data }) => {
+                                    if (msg) {
+                                        setShowRollbackForm(undefined);
+                                        return message.error(msg);
+                                    }
+                                    message.success('回滚成功');
+                                    if (showRollbackForm)
+                                        setShowRollbackForm({ ...showRollbackForm, outputs: data });
+                                })
+                                .catch(() => setShowRollbackForm(undefined));
+                        }}
+                    >
+                        {commands && (
+                            <ProFormSelect
+                                label="部署步骤"
+                                name="commands"
+                                mode="multiple"
+                                initialValue={commands
+                                    .filter(
+                                        (cmd) =>
+                                            ['before_release', 'after_release'].includes(
+                                                cmd.step,
+                                            ) && cmd.default_selected,
+                                    )
+                                    .map((cmd) => cmd.id)}
+                                options={commands
+                                    .filter((cmd) =>
+                                        ['before_release', 'after_release'].includes(cmd.step),
+                                    )
+                                    .map((cmd) => ({
+                                        value: cmd.id,
+                                        label: `${cmd.name}    (${cmd.step})`,
+                                    }))}
+                            />
+                        )}
+                        <ProFormTextArea name="before_release" label="切换之前运行的脚本" />
+                        <ProFormTextArea name="after_release" label="切换之后运行的脚本" />
+                    </ProForm>
+                )}
             </Modal>
             <Modal
                 open={showForm}
