@@ -6,8 +6,10 @@ import {
     runDeployment,
 } from '@/services/ant-design-pro/deployment';
 import { notify } from '@/services/ant-design-pro/notify';
+import { Link } from '@@/exports';
+import { PageContainer } from '@ant-design/pro-components';
 import { useRequest } from 'ahooks';
-import { Button, Modal, Spin, message } from 'antd';
+import { Button, Modal, message } from 'antd';
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -85,92 +87,103 @@ export default function () {
     }, [data]);
 
     return (
-        <Spin spinning={loading}>
-            <Modal
-                width="80%"
-                open={output !== undefined}
-                onOk={() => setOutput(undefined)}
-                onCancel={() => setOutput(undefined)}
-            >
-                <div
-                    className="pt-5 w-full"
-                    dangerouslySetInnerHTML={{
-                        __html: (output?.outputs || '无输出').replaceAll('\n', '<br>'),
-                    }}
-                ></div>
-            </Modal>
-
-            <div className="p-5 text-2xl">项目：{data?.project.name}</div>
-
-            <div className="grid-cols-3 grid px-5">
+        <PageContainer
+            title={
+                <Link to={`/project/detail?id=${deployment?.project_id}`}>
+                    {data?.project.name}
+                </Link>
+            }
+            loading={loading}
+            contentWidth="Fluid"
+            content={
                 <div>
-                    <div>评论：</div>
-                    <div>{deployment?.comment || '无评论'}</div>
-                </div>
-                <div>
-                    <div>版本：</div>
-                    <div className="mb-3">{deployment?.version}</div>
-                    <div>提交：</div>
-                    <div className="mb-3">{deployment?.commit}</div>
-                </div>
-                <div className="">
-                    <div className="flex">
-                        <div>状态：</div>
+                    <Modal
+                        width="80%"
+                        open={output !== undefined}
+                        onOk={() => setOutput(undefined)}
+                        onCancel={() => setOutput(undefined)}
+                    >
                         <div
-                            className={classNames({
-                                'text-green-500': deployment?.status === 'finished',
-                                'text-blue-500': deployment?.status === 'running',
-                                'text-red-500': deployment?.status === 'failed',
-                            })}
-                        >
-                            {deployment?.status}
+                            className="pt-5 w-full"
+                            dangerouslySetInnerHTML={{
+                                __html: (output?.outputs || '无输出').replaceAll('\n', '<br>'),
+                            }}
+                        ></div>
+                    </Modal>
+
+                    <div className="grid-cols-3 grid px-5">
+                        <div>
+                            <div>评论：</div>
+                            <div>{deployment?.comment || '无评论'}</div>
+                        </div>
+                        <div>
+                            <div>版本：</div>
+                            <div className="mb-3">{deployment?.version}</div>
+                            <div>提交：</div>
+                            <div className="mb-3">{deployment?.commit}</div>
+                        </div>
+                        <div className="">
+                            <div className="flex">
+                                <div>状态：</div>
+                                <div
+                                    className={classNames({
+                                        'text-green-500': deployment?.status === 'finished',
+                                        'text-blue-500': deployment?.status === 'running',
+                                        'text-red-500': deployment?.status === 'failed',
+                                    })}
+                                >
+                                    {deployment?.status}
+                                </div>
+                            </div>
+                            <div className="p-3">
+                                <Button
+                                    onClick={() => {
+                                        if (deployment?.status !== 'failed') {
+                                            return message.warning('该部署已成功!');
+                                        }
+                                        runDeployment(deployment?.id);
+                                    }}
+                                >
+                                    重新运行
+                                </Button>
+                            </div>
                         </div>
                     </div>
-                    <div className="p-3">
-                        <Button
-                            onClick={() => {
-                                if (deployment?.status !== 'failed') {
-                                    return message.warning('该部署已成功!');
-                                }
-                                runDeployment(deployment?.id);
-                            }}
-                        >
-                            重新运行
-                        </Button>
+
+                    <div className="mt-5">
+                        {deployment?.results.map((result, index) => (
+                            <div className={classNames('rounded border mb-3 px-5', {})} key={index}>
+                                <div className="flex justify-between py-3 border-b">
+                                    <div>
+                                        步骤：
+                                        {result.command > 0
+                                            ? data?.commands[result.command].name
+                                            : {
+                                                  init: '初始化',
+                                                  before_clone: '克隆前',
+                                                  clone: '克隆',
+                                                  prepare: '准备',
+                                                  release: '发布',
+                                              }[result.step] || result.step}
+                                    </div>
+                                    <div>
+                                        耗时：
+                                        {result.time_consuming
+                                            ? result.time_consuming / 1000 + '秒'
+                                            : '未完成'}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    {renderServers(result.servers, (key) =>
+                                        setOutput(result.servers[key]),
+                                    )}
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
-            </div>
-
-            <div className="mt-5">
-                {deployment?.results.map((result, index) => (
-                    <div className={classNames('rounded border mb-3 px-5', {})} key={index}>
-                        <div className="flex justify-between py-3 border-b">
-                            <div>
-                                步骤：
-                                {result.command > 0
-                                    ? data?.commands[result.command].name
-                                    : {
-                                          init: '初始化',
-                                          before_clone: '克隆前',
-                                          clone: '克隆',
-                                          prepare: '准备',
-                                          release: '发布',
-                                      }[result.step] || result.step}
-                            </div>
-                            <div>
-                                耗时：
-                                {result.time_consuming
-                                    ? result.time_consuming / 1000 + '秒'
-                                    : '未完成'}
-                            </div>
-                        </div>
-
-                        <div>
-                            {renderServers(result.servers, (key) => setOutput(result.servers[key]))}
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </Spin>
+            }
+        />
     );
 }
