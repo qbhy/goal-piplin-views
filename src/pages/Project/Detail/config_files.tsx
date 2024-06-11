@@ -138,6 +138,7 @@ const ConfigFiles: React.FC<{ projectId: number }> = ({ projectId }) => {
             </Modal>
 
             <ProTable
+                rowKey="id"
                 actionRef={tableRef}
                 toolBarRender={() => [
                     <Button

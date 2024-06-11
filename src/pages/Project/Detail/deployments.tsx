@@ -28,7 +28,7 @@ import { Link, useNavigate } from 'umi';
 
 const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
     const [showForm, setShowForm] = useState(false);
-    const [showRollbackForm, setShowRollbackForm] = useState<number>();
+    const [showRollbackForm, setShowRollbackForm] = useState<Deployment>();
     const [loading, setLoading] = useState(false);
     const tableRef = useRef<ActionType>();
     const { data: environments } = useRequest(() => getEnvironments({ project_id: project?.id }));
@@ -81,7 +81,7 @@ const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
                                 </Link>
                             </Button>
                             {data.status === 'finished' && (
-                                <Button onClick={() => setShowRollbackForm(data.id)}>撤回</Button>
+                                <Button onClick={() => setShowRollbackForm(data)}>撤回</Button>
                             )}
                         </Button.Group>
                     </div>
@@ -111,10 +111,18 @@ const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
             <Modal
                 open={showRollbackForm !== undefined}
                 onCancel={() => setShowRollbackForm(undefined)}
+                title={
+                    <div className="font-normal mb-3">
+                        <div className="text-xl font-bold">
+                            撤回到提交记录为：{showRollbackForm?.comment}
+                        </div>
+                        <div className="mt-3">提交版本为：{showRollbackForm?.commit}</div>
+                    </div>
+                }
             >
                 <ProForm
                     onFinish={async (value) => {
-                        rollbackDeployment({ id: Number(showRollbackForm), ...value })
+                        rollbackDeployment({ id: Number(showRollbackForm?.id), ...value })
                             .then(({ msg }) => {
                                 if (msg) {
                                     return message.error(msg);
@@ -124,6 +132,28 @@ const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
                             .finally(() => setShowRollbackForm(undefined));
                     }}
                 >
+                    {commands && (
+                        <ProFormSelect
+                            label="部署步骤"
+                            name="commands"
+                            mode="multiple"
+                            initialValue={commands
+                                .filter(
+                                    (cmd) =>
+                                        ['before_release', 'after_release'].includes(cmd.step) &&
+                                        cmd.default_selected,
+                                )
+                                .map((cmd) => cmd.id)}
+                            options={commands
+                                .filter((cmd) =>
+                                    ['before_release', 'after_release'].includes(cmd.step),
+                                )
+                                .map((cmd) => ({
+                                    value: cmd.id,
+                                    label: `${cmd.name}(${cmd.step})`,
+                                }))}
+                        />
+                    )}
                     <ProFormTextArea name="before_release" label="切换之前运行的脚本" />
                     <ProFormTextArea name="after_release" label="切换之后运行的脚本" />
                 </ProForm>
