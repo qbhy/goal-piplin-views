@@ -5,23 +5,63 @@ import Editor from '@/pages/Project/Detail/editor';
 import Environments from '@/pages/Project/Detail/environments';
 import Members from '@/pages/Project/Detail/members';
 import ShareFiles from '@/pages/Project/Detail/share_files';
-import { getProjectDetail } from '@/services/ant-design-pro/project';
+import { getProjectDetail, getProjects, Project } from '@/services/ant-design-pro/project';
 import { PageContainer } from '@ant-design/pro-components';
 import { Link } from '@umijs/max';
 import { useRequest } from 'ahooks';
-import { Tabs } from 'antd';
+import { Dropdown, Tabs } from 'antd';
+import { DownOutline } from 'antd-mobile-icons';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 export default () => {
     const [params, setParams] = useSearchParams();
+    const [products, setProjects] = useState<Project[]>([]);
     const {
         data: project,
         loading,
         refresh,
-    } = useRequest(async () => getProjectDetail(params.get('id')));
+    } = useRequest(async () => {
+        const data = await getProjectDetail(params.get('id'));
+        if (data.group_id) {
+            const list = await getProjects({ group_id: data.group_id });
+            setProjects(list.data);
+        }
+
+        return data;
+    });
+
+    useEffect(() => {
+        if (!loading) {
+            refresh();
+        }
+    }, [params.get('id')]);
+
     return (
         <PageContainer
-            title={<Link to={`/project/detail?id=${project?.id}`}>{project?.name}</Link>}
+            title={
+                <div className="flex gap-3 items-center">
+                    <Link to={`/project/detail?id=${project?.id}`}>{project?.name}</Link>
+                    {products.length > 0 && (
+                        <Dropdown
+                            menu={{
+                                items: products.map((item) => ({
+                                    key: item.id,
+                                    label: (
+                                        <Link to={`/project/detail?id=${item.id}`}>
+                                            {`${item.name}` +
+                                                (project?.id === item.id ? '    (当前项目)' : '')}
+                                        </Link>
+                                    ),
+                                    disabled: project?.id === item.id,
+                                })),
+                            }}
+                        >
+                            <DownOutline />
+                        </Dropdown>
+                    )}
+                </div>
+            }
             loading={loading}
             contentWidth="Fluid"
             content={
@@ -36,32 +76,36 @@ export default () => {
                         {
                             key: 'logs',
                             label: '部署记录',
-                            children: project && <Deployments project={project} />,
+                            children: project && !loading && <Deployments project={project} />,
                         },
                         {
                             key: 'environments',
                             label: '部署环境',
-                            children: project && <Environments projectId={project.id} />,
+                            children: project && !loading && (
+                                <Environments projectId={project.id} />
+                            ),
                         },
                         {
                             key: 'steps',
                             label: '部署步骤',
-                            children: project && <Commands projectId={project.id} />,
+                            children: project && !loading && <Commands projectId={project.id} />,
                         },
                         {
                             key: 'config',
                             label: '配置文件',
-                            children: project && <ConfigFiles projectId={project.id} />,
+                            children: project && !loading && <ConfigFiles projectId={project.id} />,
                         },
                         {
                             key: 'share_files',
                             label: '共享目录',
-                            children: <ShareFiles projectId={project?.id} />,
+                            children: !loading && <ShareFiles projectId={project?.id} />,
                         },
                         {
                             key: 'members',
                             label: '项目成员',
-                            children: project && <Members project={project} update={refresh} />,
+                            children: project && !loading && (
+                                <Members project={project} update={refresh} />
+                            ),
                         },
                         // {
                         //     key: 'callback',
@@ -71,7 +115,9 @@ export default () => {
                         {
                             key: 'editor',
                             label: '更新项目',
-                            children: project && <Editor project={project} onUpdated={refresh} />,
+                            children: project && !loading && (
+                                <Editor project={project} onUpdated={refresh} />
+                            ),
                         },
                     ]}
                 />
