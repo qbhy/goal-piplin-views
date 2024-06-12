@@ -27,3 +27,13 @@ jobs:
                 with:
                     push: true
                     tags: qbhy/piplin-views:latest
+                    platforms: linux/amd64,linux/arm64
+
+            -   name: Login to Aliyun Docker Registry
+                run: echo "${{ secrets.ALIYUN_DOCKER_PASSWORD }}" | docker login registry.cn-hangzhou.aliyuncs.com -u ${{ secrets.ALIYUN_DOCKER_USERNAME }} --password-stdin
+
+            -   name: Push Docker image to Aliyun Docker Registry
+                run: |
+                    docker pull qbhy/piplin-views:latest
+                    docker tag qbhy/piplin-views:latest registry.cn-hangzhou.aliyuncs.com/janguly/piplin-views:latest
+                    docker push registry.cn-hangzhou.aliyuncs.com/janguly/piplin-views:latest
