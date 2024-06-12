@@ -6,10 +6,12 @@ import {
     runDeployment,
 } from '@/services/ant-design-pro/deployment';
 import { notify } from '@/services/ant-design-pro/notify';
+import { Project, getProjects } from '@/services/ant-design-pro/project';
 import { Link } from '@@/exports';
 import { PageContainer } from '@ant-design/pro-components';
 import { useRequest } from 'ahooks';
-import { Button, Modal, message } from 'antd';
+import { Button, Dropdown, Modal, message } from 'antd';
+import { DownOutline } from 'antd-mobile-icons';
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -44,20 +46,27 @@ function renderServers(servers: Record<string, CommandOutput>, onClick: (key: st
 export default function () {
     const [params] = useSearchParams();
     const [output, setOutput] = useState<CommandOutput>();
+    const [products, setProjects] = useState<Project[]>([]);
 
     const [deployment, setDeployment] = useState<Deployment>();
-    const { data, loading } = useRequest(async () =>
-        getDeploymentDetail(params.get('id')).then((res) => {
-            setDeployment(res.deployment);
-            const commands: Record<number, Command> = {};
-            for (const command of res.commands) {
-                if (command.id) {
-                    commands[command.id] = command;
-                }
+
+    const { data, loading } = useRequest(async () => {
+        const data = await getDeploymentDetail(params.get('id'));
+        if (data.project.group_id) {
+            const list = await getProjects({ group_id: data.project.group_id });
+            setProjects(list.data);
+        }
+
+        setDeployment(data.deployment);
+        const commands: Record<number, Command> = {};
+        for (const command of data.commands) {
+            if (command.id) {
+                commands[command.id] = command;
             }
-            return { ...res, commands };
-        }),
-    );
+        }
+
+        return { ...data, commands };
+    });
 
     useEffect(() => {
         const eventSource = notify();
@@ -89,9 +98,31 @@ export default function () {
     return (
         <PageContainer
             title={
-                <Link to={`/project/detail?id=${deployment?.project_id}`}>
-                    {data?.project.name}
-                </Link>
+                <div className="flex gap-3 items-center">
+                    <Link to={`/project/detail?id=${data?.project?.id}`}>
+                        {data?.project?.name}
+                    </Link>
+                    {products.length > 0 && (
+                        <Dropdown
+                            menu={{
+                                items: products.map((item) => ({
+                                    key: item.id,
+                                    label: (
+                                        <Link to={`/project/detail?id=${item.id}`}>
+                                            {`${item.name}` +
+                                                (data?.project?.id === item.id
+                                                    ? '    (当前项目)'
+                                                    : '')}
+                                        </Link>
+                                    ),
+                                    disabled: data?.project?.id === item.id,
+                                })),
+                            }}
+                        >
+                            <DownOutline />
+                        </Dropdown>
+                    )}
+                </div>
             }
             loading={loading}
             contentWidth="Fluid"
