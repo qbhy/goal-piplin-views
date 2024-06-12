@@ -1,3 +1,4 @@
+import Deploy, { DeployAction } from '@/components/Deploy';
 import { getGroups } from '@/services/ant-design-pro/group';
 import { getKeys } from '@/services/ant-design-pro/key';
 import {
@@ -17,8 +18,9 @@ import {
 } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-table';
 import { Button, Dropdown, message, Modal, Spin } from 'antd';
+import { DownOutline } from 'antd-mobile-icons';
 import React, { useRef, useState } from 'react';
-import { Link, useNavigate } from 'umi';
+import { useNavigate } from 'umi';
 
 const List: React.FC = () => {
     const [loading, setLoading] = useState(false);
@@ -40,48 +42,55 @@ const List: React.FC = () => {
             render: (data: any | Project) => {
                 return (
                     <div className="flex gap-3 items-center">
-                        <Dropdown
-                            menu={{
-                                items: [
-                                    { key: 'copy', label: '复制项目' },
-                                    { key: 'delete', label: '删除项目' },
-                                ],
-                                onClick: (e) => {
-                                    switch (e.key) {
-                                        case 'copy':
-                                            setTargetProject(data);
-                                            setTimeout(
-                                                () => formRef.current?.setFieldsValue(data),
-                                                100,
-                                            );
-                                            break;
-                                        case 'delete':
-                                            Modal.confirm({
-                                                onOk: () => {
-                                                    setLoading(true);
-                                                    deleteProject(data.id).then(({ msg }) => {
-                                                        if (msg !== undefined) {
-                                                            return message.error(msg);
-                                                        }
-                                                        message.success('删除成功!');
-                                                        tableRef.current?.reload();
-                                                        setLoading(false);
-                                                    });
-                                                },
-                                                title: `确定删除项目 "${data.name}" 吗？`,
-                                            });
-                                            break;
-                                    }
-                                },
-                            }}
-                        >
-                            <Link
-                                className="py-1.5 px-4 border rounded-lg hover:border-blue-300"
-                                to={`/project/detail?id=${data.id}`}
-                            >
+                        <Button.Group>
+                            <Button onClick={() => navigate(`/project/detail?id=${data.id}`)}>
                                 进入项目
-                            </Link>
-                        </Dropdown>
+                            </Button>
+                            <Button
+                                onClick={() => navigate(`/project/detail?id=${data.id}&deploy`)}
+                            >
+                                部署
+                            </Button>
+                            <Dropdown
+                                menu={{
+                                    items: [
+                                        { key: 'copy', label: '复制项目' },
+                                        { key: 'delete', label: '删除项目' },
+                                    ],
+                                    onClick: (e) => {
+                                        switch (e.key) {
+                                            case 'copy':
+                                                setTargetProject(data);
+                                                setTimeout(
+                                                    () => formRef.current?.setFieldsValue(data),
+                                                    100,
+                                                );
+                                                break;
+                                            case 'delete':
+                                                Modal.confirm({
+                                                    onOk: () => {
+                                                        setLoading(true);
+                                                        deleteProject(data.id).then(({ msg }) => {
+                                                            if (msg !== undefined) {
+                                                                return message.error(msg);
+                                                            }
+                                                            message.success('删除成功!');
+                                                            tableRef.current?.reload();
+                                                            setLoading(false);
+                                                        });
+                                                    },
+                                                    title: `确定删除项目 "${data.name}" 吗？`,
+                                                });
+                                                break;
+                                        }
+                                    },
+                                }}
+                            >
+                                <Button>
+                                    <DownOutline />
+                                </Button>
+                            </Dropdown>
+                        </Button.Group>
                     </div>
                 );
             },
@@ -93,6 +102,8 @@ const List: React.FC = () => {
             return res;
         }),
     );
+    const deployRef = useRef<DeployAction>();
+    const [deploy, setDeploy] = useState<Project>();
 
     return (
         <Spin spinning={loading || groupLoading || keyLoading}>
@@ -182,6 +193,19 @@ const List: React.FC = () => {
                     />
                 </ProForm>
             </Modal>
+
+            {deploy && (
+                <Deploy
+                    ref={deployRef}
+                    onClose={() => setDeploy(undefined)}
+                    open
+                    project={deploy}
+                    onDeploy={(data) => {
+                        tableRef.current?.reload();
+                        navigate(`/project/deployment?id=${data.id}`);
+                    }}
+                />
+            )}
 
             <ProTable
                 actionRef={tableRef}
