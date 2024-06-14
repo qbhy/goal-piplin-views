@@ -96,7 +96,7 @@ export default forwardRef<DeployAction | undefined, DeployProps>(
 
                     <ProFormItem name="version" label="版本/分支">
                         <AutoComplete
-                            className="w-full mb-5"
+                            className="w-full"
                             placeholder="如：master"
                             options={branches}
                         />
