@@ -19,11 +19,12 @@ import { Button, Modal, message } from 'antd';
 import classNames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Link, useNavigate } from 'umi';
+import { useNavigate } from 'umi';
 
 const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
     const [showRollbackForm, setShowRollbackForm] = useState<Deployment & { outputs?: string[] }>();
     const [params] = useSearchParams();
+    const navigate = useNavigate();
     const columns: ProColumns<Deployment>[] = [
         { dataIndex: 'id', title: 'ID', search: false },
         { dataIndex: 'comment', title: '备注' },
@@ -61,13 +62,8 @@ const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
                 return (
                     <div>
                         <Button.Group>
-                            <Button>
-                                <Link
-                                    className="w-full h-full"
-                                    to={`/project/deployment?id=${data.id}`}
-                                >
-                                    详情
-                                </Link>
+                            <Button onClick={() => navigate(`/project/deployment?id=${data.id}`)}>
+                                详情
                             </Button>
                             {data.status === 'finished' && (
                                 <Button onClick={() => setShowRollbackForm(data)}>撤回</Button>
@@ -81,7 +77,6 @@ const Deployments: React.FC<{ project: ProjectDetail }> = ({ project }) => {
     const { data: commands } = useRequest(() => getCommands({ project_id: project?.id }));
     const tableRef = useRef<ActionType>();
     const deployRef = useRef<DeployAction>();
-    const navigate = useNavigate();
 
     useEffect(() => {
         if (params.has('deploy')) {
