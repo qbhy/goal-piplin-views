@@ -26,7 +26,7 @@ const List: React.FC = () => {
     const [groupValueEnum, setGroupValueEnum] = useState<Record<number, string>>();
     const { data: groups, loading: groupLoading } = useRequest(() =>
         getGroups().then((res) => {
-            const enums: Record<number, string> = {};
+            const enums: Record<number, string> = { 0: '未分组' };
             res.data.forEach((item) => {
                 enums[item.id] = item.name;
             });
