@@ -48,7 +48,7 @@ export default () => {
                                 items: products.map((item) => ({
                                     key: item.id,
                                     label: (
-                                        <Link to={`/project/detail?id=${item.id}`}>
+                                        <Link to={`/project/detail?id=${item.id}`} key={item.id}>
                                             {`${item.name}` +
                                                 (project?.id === item.id ? '    (当前项目)' : '')}
                                         </Link>

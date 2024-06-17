@@ -15,6 +15,7 @@ import { DownOutline } from 'antd-mobile-icons';
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'umi';
 
 function renderServers(servers: Record<string, CommandOutput>, onClick: (key: string) => void) {
     const items = [];
@@ -47,7 +48,7 @@ export default function () {
     const [params] = useSearchParams();
     const [output, setOutput] = useState<CommandOutput>();
     const [products, setProjects] = useState<Project[]>([]);
-
+    const navigate = useNavigate();
     const [deployment, setDeployment] = useState<Deployment>();
 
     const { data, loading } = useRequest(async () => {
@@ -167,16 +168,23 @@ export default function () {
                                 </div>
                             </div>
                             <div className="p-3">
-                                <Button
-                                    onClick={() => {
-                                        if (deployment?.status !== 'failed') {
-                                            return message.warning('该部署已成功!');
+                                <Button.Group>
+                                    {deployment?.status === 'failed' && (
+                                        <Button onClick={() => runDeployment(deployment?.id)}>
+                                            重新运行
+                                        </Button>
+                                    )}
+
+                                    <Button
+                                        onClick={() =>
+                                            navigate(
+                                                `/project/detail?id=${data?.project.id}&deploy`,
+                                            )
                                         }
-                                        runDeployment(deployment?.id);
-                                    }}
-                                >
-                                    重新运行
-                                </Button>
+                                    >
+                                        再次部署
+                                    </Button>
+                                </Button.Group>
                             </div>
                         </div>
                     </div>

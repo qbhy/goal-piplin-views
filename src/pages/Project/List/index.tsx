@@ -23,6 +23,17 @@ import React, { useRef, useState } from 'react';
 import { useNavigate } from 'umi';
 
 const List: React.FC = () => {
+    const [groupValueEnum, setGroupValueEnum] = useState<Record<number, string>>();
+    const { data: groups, loading: groupLoading } = useRequest(() =>
+        getGroups().then((res) => {
+            const enums: Record<number, string> = {};
+            res.data.forEach((item) => {
+                enums[item.id] = item.name;
+            });
+            setGroupValueEnum(enums);
+            return res;
+        }),
+    );
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const tableRef = useRef<ActionType>();
@@ -31,6 +42,12 @@ const List: React.FC = () => {
     const columns: ProColumns<Project>[] = [
         { dataIndex: 'id', title: 'ID', search: false },
         { dataIndex: 'name', title: '名称', filtered: true },
+        {
+            dataIndex: 'group_id',
+            title: '分组',
+            filtered: true,
+            valueEnum: groupValueEnum,
+        },
         { dataIndex: 'repo_address', title: '仓库地址' },
         { dataIndex: 'project_path', title: '项目路径' },
         { dataIndex: 'default_branch', title: '默认分支' },
@@ -96,7 +113,6 @@ const List: React.FC = () => {
             },
         },
     ];
-    const { data: groups, loading: groupLoading } = useRequest(getGroups);
     const { data: keys, loading: keyLoading } = useRequest(async () =>
         getKeys().then((res) => {
             return res;
@@ -208,6 +224,7 @@ const List: React.FC = () => {
             )}
 
             <ProTable
+                rowKey="id"
                 actionRef={tableRef}
                 toolBarRender={() => [
                     <Button onClick={() => navigate('/project/create')} key="button" type="primary">
