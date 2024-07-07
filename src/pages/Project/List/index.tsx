@@ -128,11 +128,12 @@ const List: React.FC = () => {
     const [params, setParams] = useState<Record<string, string>>({});
 
     useEffect(() => {
-        if (searchParams.has('group_id')) {
+        if (searchParams.has('group_id') && searchParams.get('group_id') !== '') {
             setParams({
                 ...params,
                 group_id: searchParams.get('group_id') || '',
             });
+            tableRef.current?.reload();
         }
     }, [searchParams]);
     return (
