@@ -16,8 +16,9 @@ import {
     ProFormSelect,
     ProFormText,
 } from '@ant-design/pro-components';
+import { ProFormItem } from '@ant-design/pro-form';
 import { ProTable } from '@ant-design/pro-table';
-import { Button, Dropdown, message, Modal, Spin } from 'antd';
+import { AutoComplete, Button, Dropdown, message, Modal, Spin } from 'antd';
 import { DownOutline } from 'antd-mobile-icons';
 import React, { useRef, useState } from 'react';
 import { useNavigate } from 'umi';
@@ -159,6 +160,7 @@ const List: React.FC = () => {
                     <ProFormSelect
                         name="key_id"
                         label="密钥"
+                        tooltip="会复制该密钥，命名为项目名字"
                         options={[
                             ...(keys
                                 ? keys.map((key) => ({
@@ -177,21 +179,26 @@ const List: React.FC = () => {
                         placeholder="请输入 git 仓库地址"
                     />
 
-                    <ProFormSelect
-                        required
+                    <ProFormItem
+                        tooltip="可以是 tag、branch、commit"
                         name="default_branch"
-                        label="默认分支"
-                        options={[
-                            ...(targetProject?.settings.branches?.map((branch) => ({
-                                label: '分支：' + branch,
-                                value: branch,
-                            })) || []),
-                            ...(targetProject?.settings.tags?.map((tag) => ({
-                                label: '分支：' + tag,
-                                value: tag,
-                            })) || []),
-                        ]}
-                    />
+                        label="默认版本/分支"
+                    >
+                        <AutoComplete
+                            className="w-full"
+                            placeholder="如：master"
+                            options={[
+                                ...(targetProject?.settings.branches?.map((branch) => ({
+                                    label: '分支：' + branch,
+                                    value: branch,
+                                })) || []),
+                                ...(targetProject?.settings.tags?.map((tag) => ({
+                                    label: '分支：' + tag,
+                                    value: tag,
+                                })) || []),
+                            ]}
+                        />
+                    </ProFormItem>
 
                     <ProFormSelect
                         required
