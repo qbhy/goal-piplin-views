@@ -22,6 +22,7 @@ import { ProTable } from '@ant-design/pro-table';
 import { useRequest } from 'ahooks';
 import { Button, Modal, message } from 'antd';
 import React, { useRef, useState } from 'react';
+import { useNavigate } from 'umi';
 
 const List: React.FC = () => {
     const [inviteGroup, setInviteGroup] = useState<Group>();
@@ -42,6 +43,8 @@ const List: React.FC = () => {
         getGroupMembers({ id }).then(({ data }) => {
             setMembers(data);
         });
+
+    const navigate = useNavigate();
     const columns: ProColumns<Group>[] = [
         { dataIndex: 'id', title: 'ID', search: false },
         { dataIndex: 'name', title: '名称', filtered: true },
@@ -53,33 +56,38 @@ const List: React.FC = () => {
             render: (data: any | Group) => {
                 return (
                     <div className="flex gap-3">
-                        <Button
-                            onClick={() => {
-                                setInviteGroup(data);
-                                updateMembers(data.id);
-                            }}
-                        >
-                            项目成员
-                        </Button>
-                        <Button onClick={() => setForm(data)}>详情</Button>
-                        <Button
-                            danger
-                            onClick={() =>
-                                Modal.confirm({
-                                    onOk: () => {
-                                        setLoading(true);
-                                        deleteGroups([data.id]).then(({ msg }) => {
-                                            if (msg !== undefined) return message.error(msg);
-                                            tableRef.current?.reload();
-                                            setLoading(false);
-                                        });
-                                    },
-                                    title: `确定删除密钥 "${data.name}" 吗？`,
-                                })
-                            }
-                        >
-                            删除
-                        </Button>
+                        <Button.Group>
+                            <Button
+                                onClick={() => {
+                                    setInviteGroup(data);
+                                    updateMembers(data.id);
+                                }}
+                            >
+                                项目成员
+                            </Button>
+                            <Button onClick={() => navigate('/project/list?group_id=' + data.id)}>
+                                项目
+                            </Button>
+                            <Button onClick={() => setForm(data)}>详情</Button>
+                            <Button
+                                danger
+                                onClick={() =>
+                                    Modal.confirm({
+                                        onOk: () => {
+                                            setLoading(true);
+                                            deleteGroups([data.id]).then(({ msg }) => {
+                                                if (msg !== undefined) return message.error(msg);
+                                                tableRef.current?.reload();
+                                                setLoading(false);
+                                            });
+                                        },
+                                        title: `确定删除分组 "${data.name}" 吗？`,
+                                    })
+                                }
+                            >
+                                删除
+                            </Button>
+                        </Button.Group>
                     </div>
                 );
             },

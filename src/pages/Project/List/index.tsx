@@ -20,7 +20,8 @@ import { ProFormItem } from '@ant-design/pro-form';
 import { ProTable } from '@ant-design/pro-table';
 import { AutoComplete, Button, Dropdown, message, Modal, Spin } from 'antd';
 import { DownOutline } from 'antd-mobile-icons';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'umi';
 
 const List: React.FC = () => {
@@ -41,18 +42,19 @@ const List: React.FC = () => {
     const [targetProject, setTargetProject] = useState<Project>();
     const formRef = useRef<ProFormInstance>();
     const columns: ProColumns<Project>[] = [
-        { dataIndex: 'id', title: 'ID', search: false },
-        { dataIndex: 'name', title: '名称', filtered: true },
+        { dataIndex: 'id', title: 'ID', search: false, sorter: true },
+        { dataIndex: 'name', title: '名称', filtered: true, sorter: true },
         {
             dataIndex: 'group_id',
             title: '分组',
             filtered: true,
             valueEnum: groupValueEnum,
+            sorter: true,
         },
         { dataIndex: 'repo_address', title: '仓库地址' },
         { dataIndex: 'project_path', title: '项目路径' },
         { dataIndex: 'default_branch', title: '默认分支' },
-        { dataIndex: 'created_at', title: '创建时间', search: false },
+        { dataIndex: 'created_at', title: '创建时间', search: false, sorter: true },
         { dataIndex: 'updated_at', title: '更新时间', search: false },
         {
             title: '操作',
@@ -121,7 +123,18 @@ const List: React.FC = () => {
     );
     const deployRef = useRef<DeployAction>();
     const [deploy, setDeploy] = useState<Project>();
+    const [searchParams, setSearchParams] = useSearchParams();
 
+    const [params, setParams] = useState<Record<string, string>>({});
+
+    useEffect(() => {
+        if (searchParams.has('group_id')) {
+            setParams({
+                ...params,
+                group_id: searchParams.get('group_id') || '',
+            });
+        }
+    }, [searchParams]);
     return (
         <Spin spinning={loading || groupLoading || keyLoading}>
             <Modal
@@ -231,6 +244,7 @@ const List: React.FC = () => {
             )}
 
             <ProTable
+                params={params}
                 rowKey="id"
                 actionRef={tableRef}
                 toolBarRender={() => [
@@ -239,7 +253,12 @@ const List: React.FC = () => {
                     </Button>,
                 ]}
                 columns={columns}
-                request={getProjects}
+                request={async (params, sort, filter) =>
+                    getProjects({ ...params, sort, filter }).then((res) => {
+                        setSearchParams('group_id', undefined);
+                        return res;
+                    })
+                }
                 pagination={{ pageSize: 10 }}
             ></ProTable>
         </Spin>
